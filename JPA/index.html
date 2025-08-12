@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://asalvadorc.github.io/AD_ORM_/JPA/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>🛠 Proyecto Kotlin + JPA (puro) + SQLite con Gradle (sin Spring) - AD - Accés a Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\ud83d\udee0 Proyecto Kotlin + JPA (puro) + SQLite con Gradle (sin Spring)";
+        var mkdocs_page_input_path = "JPA.md";
+        var mkdocs_page_url = "/AD_ORM_/JPA/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">UD 3. Mapeo Objeto-Relacional</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../RA_CE/">RA y CE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Introduccion/">Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Hibernate/">Hibernate</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">AD - Accés a Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">🛠 Proyecto Kotlin + JPA (puro) + SQLite con Gradle (sin Spring)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="proyecto-kotlin-jpa-puro-sqlite-con-gradle-sin-spring">🛠 Proyecto Kotlin + JPA (puro) + SQLite con Gradle (sin Spring)<a class="headerlink" href="#proyecto-kotlin-jpa-puro-sqlite-con-gradle-sin-spring" title="Permanent link">&para;</a></h1>
+<p>Este proyecto usa SQLite como base de datos, el estándar JPA como API de persistencia, y Hibernate como proveedor por debajo, pero trabajando directamente con JPA en lugar de las clases específicas de Hibernate.</p>
+<h2 id="estructura-del-proyecto">📁 Estructura del proyecto<a class="headerlink" href="#estructura-del-proyecto" title="Permanent link">&para;</a></h2>
+<pre><code>jpa-kotlin-sqlite/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+└── main/
+├── kotlin/
+│ └── com/ejemplo/
+│ ├── Main.kt
+│ ├── SQLiteDialect.kt
+│ └── modelo/Producto.kt
+└── resources/
+└── META-INF/
+└── persistence.xml
+</code></pre>
+<hr />
+<h2 id="paso-1-buildgradlekts">⚙️ Paso 1: <code>build.gradle.kts</code><a class="headerlink" href="#paso-1-buildgradlekts" title="Permanent link">&para;</a></h2>
+<pre><code>    plugins {
+        kotlin("jvm") version "1.9.10"
+        application
+    }
+
+    group = "com.ejemplo"
+    version = "1.0"
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation(kotlin("stdlib"))
+
+        // JPA API
+        implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+
+        // Hibernate como proveedor JPA
+        implementation("org.hibernate.orm:hibernate-core:6.4.4.Final")
+
+        // Driver SQLite
+        implementation("org.xerial:sqlite-jdbc:3.44.1.0")
+    }
+
+    application {
+        mainClass.set("com.ejemplo.MainKt")
+    }
+</code></pre>
+<p>⚙️ Paso 2: settings.gradle.kts</p>
+<pre><code>rootProject.name = "jpa-kotlin-sqlite"
+</code></pre>
+<p>Paso 3: persistence.xml en src/main/resources/META-INF/</p>
+<pre><code>    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+                version="3.0"&gt;
+        &lt;persistence-unit name="miUnidad" transaction-type="RESOURCE_LOCAL"&gt;
+            &lt;provider&gt;org.hibernate.jpa.HibernatePersistenceProvider&lt;/provider&gt;
+
+            &lt;class&gt;com.ejemplo.modelo.Producto&lt;/class&gt;
+            &lt;properties&gt;
+                &lt;property name="jakarta.persistence.jdbc.driver" value="org.sqlite.JDBC"/&gt;
+                &lt;property name="jakarta.persistence.jdbc.url" value="jdbc:sqlite:miBD.db"/&gt;
+                &lt;property name="jakarta.persistence.jdbc.user" value=""/&gt;
+                &lt;property name="jakarta.persistence.jdbc.password" value=""/&gt;
+
+                &lt;property name="hibernate.dialect" value="com.ejemplo.SQLiteDialect"/&gt;
+                &lt;property name="hibernate.hbm2ddl.auto" value="update"/&gt;
+                &lt;property name="hibernate.show_sql" value="true"/&gt;
+            &lt;/properties&gt;
+        &lt;/persistence-unit&gt;
+    &lt;/persistence&gt;
+</code></pre>
+<p>Paso 4: Dialecto SQLite personalizado (SQLiteDialect.kt)</p>
+<pre><code>    package com.ejemplo
+
+    import org.hibernate.dialect.Dialect
+    import org.hibernate.dialect.identity.IdentityColumnSupportImpl
+    import org.hibernate.dialect.identity.IdentityColumnSupport
+    import java.sql.Types
+
+    class SQLiteDialect : Dialect() {
+        override fun getIdentityColumnSupport(): IdentityColumnSupport = object : IdentityColumnSupportImpl() {
+            override fun supportsIdentityColumns() = true
+            override fun getIdentitySelectString(table: String?, column: String?, type: Int) = "select last_insert_rowid()"
+            override fun getIdentityColumnString(type: Int) = "integer"
+        }
+
+        init {
+            registerColumnType(Types.INTEGER, "integer")
+            registerColumnType(Types.VARCHAR, "text")
+            registerColumnType(Types.DOUBLE, "double")
+        }
+
+        override fun hasAlterTable() = false
+        override fun dropConstraints() = false
+        override fun getAddColumnString() = "add column"
+        override fun supportsIfExistsBeforeTableName() = true
+        override fun supportsCascadeDelete() = false
+    }
+</code></pre>
+<p>Paso 5: Entidad JPA Producto.kt</p>
+<pre><code>    package com.ejemplo.modelo
+
+    import jakarta.persistence.*
+
+    @Entity
+    @Table(name = "productos")
+    data class Producto(
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        val id: Long = 0,
+
+        @Column(nullable = false)
+        val nombre: String,
+
+        val precio: Double
+    )
+</code></pre>
+<p>Paso 6: Clase principal Main.kt</p>
+<pre><code>    package com.ejemplo
+
+    import com.ejemplo.modelo.Producto
+    import jakarta.persistence.Persistence
+
+    fun main() {
+        val emf = Persistence.createEntityManagerFactory("miUnidad")
+        val em = emf.createEntityManager()
+
+        val producto = Producto(nombre = "Tablet", precio = 299.99)
+
+        em.transaction.begin()
+        em.persist(producto)
+        em.transaction.commit()
+
+        em.close()
+        emf.close()
+
+        println("Producto guardado en base de datos SQLite con JPA.")
+    }
+</code></pre>
+<p>🧪 Verificación</p>
+<ul>
+<li>Al ejecutar el programa se crea el archivo miBD.db</li>
+<li>Se insertará un producto en la tabla productos</li>
+<li>Puedes abrirlo con SQLiteStudio, DB Browser, DBeaver, etc.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

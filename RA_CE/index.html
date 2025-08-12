@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://asalvadorc.github.io/AD_ORM_/RA_CE/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>RA y CE - AD - Accés a Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RA y CE";
+        var mkdocs_page_input_path = "RA_CE.md";
+        var mkdocs_page_url = "/AD_ORM_/RA_CE/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">UD 3. Mapeo Objeto-Relacional</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">RA y CE</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Introduccion/">Introducción</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Hibernate/">Hibernate</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">AD - Accés a Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">UD 3. Mapeo Objeto-Relacional</li>
+      <li class="breadcrumb-item active">RA y CE</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="ra-3-gestiona-la-persistencia-de-los-datos-identificando-herramientas-de-mapeo-objeto-relacional-orm-y-desarrollando-aplicaciones-que-las-utilizan">RA 3 – Gestiona la persistencia de los datos identificando herramientas de mapeo objeto-relacional (ORM) y desarrollando aplicaciones que las utilizan<a class="headerlink" href="#ra-3-gestiona-la-persistencia-de-los-datos-identificando-herramientas-de-mapeo-objeto-relacional-orm-y-desarrollando-aplicaciones-que-las-utilizan" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Criterio de Evaluación</strong></th>
+<th><strong>Contenidos Asociados</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a) Se ha instalado la herramienta ORM.</td>
+<td>- Introducción a los ORM (Hibernate, JPA, Spring Data JPA)  <br> - Instalación y configuración en proyectos Kotlin/Java con Maven o Gradle</td>
+</tr>
+<tr>
+<td>b) Se ha configurado la herramienta ORM.</td>
+<td>- Configuración del <code>persistence.xml</code> o <code>application.properties/yml</code> <br> - Integración con bases de datos (PostgreSQL, H2, MySQL)</td>
+</tr>
+<tr>
+<td>c) Se han definido configuraciones de mapeo.</td>
+<td>- Anotaciones JPA (<code>@Entity</code>, <code>@Table</code>, <code>@Id</code>, <code>@GeneratedValue</code>, <code>@Column</code>) <br> - Relaciones: <code>@OneToMany</code>, <code>@ManyToOne</code>, <code>@OneToOne</code>, <code>@ManyToMany</code></td>
+</tr>
+<tr>
+<td>d) Se han aplicado mecanismos de persistencia a los objetos.</td>
+<td>- EntityManager o interfaces <code>CrudRepository</code> / <code>JpaRepository</code> <br> - Métodos <code>persist</code>, <code>merge</code>, <code>remove</code>, <code>find</code>, etc.</td>
+</tr>
+<tr>
+<td>e) Se han desarrollado aplicaciones que modifican y recuperan objetos persistentes.</td>
+<td>- CRUD completo desde una aplicación Kotlin o Java <br> - Casos de uso: altas, bajas, modificaciones y consultas</td>
+</tr>
+<tr>
+<td>f) Se han desarrollado aplicaciones que realizan consultas usando el lenguaje SQL.</td>
+<td>- Consultas con JPQL (<code>SELECT e FROM Entidad e WHERE...</code>) <br> - Consultas nativas con <code>@Query(nativeQuery = true)</code></td>
+</tr>
+<tr>
+<td>g) Se han gestionado las transacciones.</td>
+<td>- Gestión con <code>@Transactional</code> <br> - Control de transacciones automáticas y manuales en JPA y Spring <br> - Manejo de errores y rollbacks</td>
+</tr>
+</tbody>
+</table>
+<h2 id="contenidos">Contenidos<a class="headerlink" href="#contenidos" title="Permanent link">&para;</a></h2>
+<p>7# 🧩 Unidad Didáctica: Persistencia de datos con ORM (RA 3)</p>
+<h2 id="ra-3-gestiona-la-persistencia-de-los-datos-identificando-herramientas-de-mapeo-objeto-relacional-orm-y-desarrollando-aplicaciones-que-las-utilizan_1">RA 3 – Gestiona la persistencia de los datos identificando herramientas de mapeo objeto-relacional (ORM) y desarrollando aplicaciones que las utilizan<a class="headerlink" href="#ra-3-gestiona-la-persistencia-de-los-datos-identificando-herramientas-de-mapeo-objeto-relacional-orm-y-desarrollando-aplicaciones-que-las-utilizan_1" title="Permanent link">&para;</a></h2>
+<hr />
+<h2 id="1-introduccion-a-la-persistencia-y-a-los-orm">1. Introducción a la persistencia y a los ORM<a class="headerlink" href="#1-introduccion-a-la-persistencia-y-a-los-orm" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Qué es la persistencia de datos</li>
+<li>Ventajas del mapeo objeto-relacional</li>
+<li>Herramientas ORM: Hibernate, JPA, Spring Data JPA</li>
+<li>Ciclo de vida de un objeto persistente</li>
+</ul>
+<blockquote>
+<p><strong>Objetivo:</strong> Comprender el papel del ORM en el desarrollo de aplicaciones con bases de datos relacionales.</p>
+</blockquote>
+<hr />
+<h2 id="2-instalacion-y-configuracion-basica-del-orm">2. Instalación y configuración básica del ORM<a class="headerlink" href="#2-instalacion-y-configuracion-basica-del-orm" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Estructura de un proyecto con ORM en Kotlin (Maven/Gradle)</li>
+<li>Añadir dependencias (Hibernate, Spring Boot Data JPA)</li>
+<li>Configurar <code>application.properties</code> o <code>persistence.xml</code></li>
+<li>Conexión con una base de datos (PostgreSQL, H2, etc.)</li>
+</ul>
+<blockquote>
+<p><strong>Objetivo:</strong> Preparar el entorno para trabajar con ORM en proyectos reales.</p>
+</blockquote>
+<hr />
+<h2 id="3-mapeo-de-clases-a-tablas">3. Mapeo de clases a tablas<a class="headerlink" href="#3-mapeo-de-clases-a-tablas" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Definir entidades con <code>@Entity</code> y <code>@Table</code></li>
+<li>Campos persistentes: <code>@Id</code>, <code>@GeneratedValue</code>, <code>@Column</code></li>
+<li>Relaciones:</li>
+<li><code>@OneToOne</code></li>
+<li><code>@OneToMany</code></li>
+<li><code>@ManyToOne</code></li>
+<li><code>@ManyToMany</code></li>
+<li>Estrategias de generación de claves</li>
+</ul>
+<blockquote>
+<p><strong>Objetivo:</strong> Transformar estructuras de objetos en esquemas relacionales correctamente.</p>
+</blockquote>
+<hr />
+<h2 id="4-persistencia-de-objetos">4. Persistencia de objetos<a class="headerlink" href="#4-persistencia-de-objetos" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Operaciones básicas con <code>EntityManager</code> o <code>CrudRepository</code>:</li>
+<li><code>persist</code>, <code>merge</code>, <code>remove</code>, <code>find</code>, <code>save</code>, <code>deleteById</code></li>
+<li>Guardar, modificar y eliminar objetos</li>
+<li>Cargar objetos desde la base de datos</li>
+</ul>
+<blockquote>
+<p><strong>Objetivo:</strong> Manipular datos en la base de datos a través de objetos Kotlin o Java.</p>
+</blockquote>
+<hr />
+<h2 id="5-consultas-con-jpql-y-sql-nativo">5. Consultas con JPQL y SQL nativo<a class="headerlink" href="#5-consultas-con-jpql-y-sql-nativo" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Introducción a JPQL</li>
+<li>Consultas con <code>@Query</code></li>
+<li>Filtros, condiciones y parámetros</li>
+<li>Consultas nativas con SQL</li>
+<li>DTOs y proyecciones</li>
+</ul>
+<blockquote>
+<p><strong>Objetivo:</strong> Consultar información con un lenguaje orientado a objetos o directamente con SQL.</p>
+</blockquote>
+<hr />
+<h2 id="6-gestion-de-transacciones">6. Gestión de transacciones<a class="headerlink" href="#6-gestion-de-transacciones" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Qué es una transacción y por qué es importante</li>
+<li>Anotación <code>@Transactional</code></li>
+<li>Transacciones automáticas y manuales</li>
+<li>Rollbacks y control de errores</li>
+</ul>
+<blockquote>
+<p><strong>Objetivo:</strong> Garantizar la integridad de los datos mediante control de transacciones.</p>
+</blockquote>
+<hr />
+<h2 id="7-proyecto-practico-integrador">7. Proyecto práctico integrador<a class="headerlink" href="#7-proyecto-practico-integrador" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Desarrollo de una pequeña aplicación CRUD con Spring Boot y PostgreSQL</li>
+<li>Crear entidad-relación simple (por ejemplo, Clientes y Pedidos)</li>
+<li>Operaciones completas de alta, baja, modificación y consulta</li>
+<li>Gestión de relaciones y transacciones</li>
+</ul>
+<blockquote>
+<p><strong>Objetivo:</strong> Consolidar los aprendizajes aplicando todo el ciclo de persistencia con ORM.</p>
+</blockquote>
+<h1 id="unidad-didactica-persistencia-de-datos-con-herramientas-orm-jpahibernate">Unidad Didáctica: Persistencia de Datos con Herramientas ORM (JPA/Hibernate)<a class="headerlink" href="#unidad-didactica-persistencia-de-datos-con-herramientas-orm-jpahibernate" title="Permanent link">&para;</a></h1>
+<p><strong>Destinatarios:</strong> Alumnos de 2º DAM<br />
+<strong>Duración estimada:</strong> 20-24 sesiones</p>
+<hr />
+<h2 id="1-introduccion-a-orm-y-jpahibernate">1. Introducción a ORM y JPA/Hibernate<a class="headerlink" href="#1-introduccion-a-orm-y-jpahibernate" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Conceptos clave</strong></li>
+<li>¿Qué es un ORM? Ventajas y desventajas.</li>
+<li>Diferencias entre JDBC y ORM.</li>
+<li>Arquitectura de JPA (Java Persistence API) e implementaciones (Hibernate, EclipseLink).</li>
+<li><strong>Herramientas ORM en el mercado</strong></li>
+<li>Hibernate, Spring Data JPA, JOOQ.</li>
+<li>Casos de uso en aplicaciones empresariales.</li>
+</ul>
+<hr />
+<h2 id="2-instalacion-y-configuracion-de-herramientas-orm">2. Instalación y Configuración de Herramientas ORM<a class="headerlink" href="#2-instalacion-y-configuracion-de-herramientas-orm" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Entorno de desarrollo</strong></li>
+<li>Configuración de un proyecto Maven/Gradle con dependencias de Hibernate y Spring Data JPA.</li>
+<li>Archivos de configuración: <code>persistence.xml</code> (JPA) o <code>application.properties</code> (Spring Boot).</li>
+<li><strong>Conexión a la base de datos</strong></li>
+<li>Configuración de dialectos (MySQL, PostgreSQL, SQLite).</li>
+<li>Parámetros esenciales: URL, usuario, contraseña, pool de conexiones.</li>
+</ul>
+<hr />
+<h2 id="3-mapeo-de-entidades-con-anotaciones-jpa">3. Mapeo de Entidades con Anotaciones JPA<a class="headerlink" href="#3-mapeo-de-entidades-con-anotaciones-jpa" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Clases persistentes</strong></li>
+<li>Anotaciones básicas: <code>@Entity</code>, <code>@Table</code>, <code>@Id</code>, <code>@GeneratedValue</code>.</li>
+<li>Tipos de datos y mapeo de columnas (<code>@Column</code>).</li>
+<li><strong>Relaciones entre entidades</strong></li>
+<li><code>@OneToMany</code>, <code>@ManyToOne</code>, <code>@ManyToMany</code>.</li>
+<li>Mapeo de herencia: estrategias (<code>SINGLE_TABLE</code>, <code>JOINED</code>, <code>TABLE_PER_CLASS</code>).</li>
+<li><strong>Colecciones y tipos avanzados</strong></li>
+<li>Mapeo de listas (<code>@ElementCollection</code>), enumeraciones (<code>@Enumerated</code>), fechas (<code>@Temporal</code>).</li>
+</ul>
+<hr />
+<h2 id="4-operaciones-crud-con-jpahibernate">4. Operaciones CRUD con JPA/Hibernate<a class="headerlink" href="#4-operaciones-crud-con-jpahibernate" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>EntityManager y Repository (Spring Data JPA)</strong></li>
+<li>Métodos básicos: <code>persist()</code>, <code>merge()</code>, <code>remove()</code>, <code>find()</code>.</li>
+<li>Uso de <code>CrudRepository</code> y <code>JpaRepository</code> en Spring Data.</li>
+<li><strong>Estados de un objeto</strong></li>
+<li>Transitorio, persistente, detached, eliminado.</li>
+<li><strong>Ejemplos prácticos</strong></li>
+<li>Inserción de registros.</li>
+<li>Actualización y eliminación.</li>
+<li>Recuperación por ID y consultas simples.</li>
+</ul>
+<hr />
+<h2 id="5-consultas-con-jpql-y-sql-nativo_1">5. Consultas con JPQL y SQL Nativo<a class="headerlink" href="#5-consultas-con-jpql-y-sql-nativo_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>JPQL (Java Persistence Query Language)</strong></li>
+<li>Sintaxis básica: <code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, <code>JOIN</code>.</li>
+<li>Consultas parametrizadas (<code>:param</code>).</li>
+<li>Consultas con proyecciones y DTOs.</li>
+<li><strong>SQL nativo</strong></li>
+<li>Uso de <code>@Query</code> en Spring Data.</li>
+<li>Resultados mapeados a entidades o objetos personalizados.</li>
+<li><strong>Consultas nombradas</strong></li>
+<li>Definición con <code>@NamedQuery</code>.</li>
+</ul>
+<hr />
+<h2 id="6-gestion-de-transacciones_1">6. Gestión de Transacciones<a class="headerlink" href="#6-gestion-de-transacciones_1" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Transacciones en JPA</strong></li>
+<li>Configuración de <code>@Transactional</code> (Spring) o <code>EntityTransaction</code> (JPA puro).</li>
+<li>Propagación de transacciones (<code>REQUIRED</code>, <code>REQUIRES_NEW</code>).</li>
+<li><strong>Manejo de errores</strong></li>
+<li>Rollback automático y manual.</li>
+<li>Excepciones comunes: <code>OptimisticLockException</code>, <code>PersistenceException</code>.</li>
+<li><strong>Ejemplo práctico</strong></li>
+<li>Transferencia bancaria con commit/rollback.</li>
+</ul>
+<hr />
+<h2 id="7-integracion-con-spring-boot-y-spring-data-jpa">7. Integración con Spring Boot y Spring Data JPA<a class="headerlink" href="#7-integracion-con-spring-boot-y-spring-data-jpa" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Spring Boot Starter Data JPA</strong></li>
+<li>Configuración automática de datasource.</li>
+<li>Repositorios automáticos: <code>findByNombre()</code>, <code>count()</code>, etc.</li>
+<li><strong>Casos avanzados</strong></li>
+<li>Paginación (<code>Pageable</code>).</li>
+<li>Auditoría de entidades (<code>@CreatedDate</code>, <code>@LastModifiedDate</code>).</li>
+</ul>
+<hr />
+<h2 id="8-proyecto-practico-integrador">8. Proyecto Práctico Integrador<a class="headerlink" href="#8-proyecto-practico-integrador" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Desarrollo de una API REST</strong></li>
+<li>CRUD completo para entidades relacionadas (ej: Biblioteca con <code>Libro</code>, <code>Autor</code>, <code>Préstamo</code>).</li>
+<li>Uso de Postman para pruebas.</li>
+<li><strong>Requisitos técnicos</strong></li>
+<li>Spring Boot + Hibernate + Base de datos relacional.</li>
+<li>Gestión de transacciones en servicios.</li>
+<li>Consultas JPQL y personalizadas.</li>
+</ul>
+<hr />
+<h2 id="evaluacion">Evaluación<a class="headerlink" href="#evaluacion" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Actividades</strong></li>
+<li>Ejercicios de mapeo con anotaciones.</li>
+<li>Desarrollo de un módulo de gestión de pedidos con transacciones.</li>
+<li>Prueba escrita sobre conceptos teóricos (JPQL, estados de objetos).</li>
+<li><strong>Rúbricas</strong></li>
+<li>Correcta configuración de la herramienta ORM.</li>
+<li>Uso eficiente de consultas y relaciones.</li>
+<li>Manejo robusto de transacciones y errores.</li>
+</ul>
+<hr />
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Introduccion/" class="btn btn-neutral float-right" title="Introducción">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="../Introduccion/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

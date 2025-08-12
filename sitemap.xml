@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://asalvadorc.github.io/AD_ORM_/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://asalvadorc.github.io/AD_ORM_/Herramientas/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://asalvadorc.github.io/AD_ORM_/Hibernate/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://asalvadorc.github.io/AD_ORM_/Introduccion/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://asalvadorc.github.io/AD_ORM_/JPA/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://asalvadorc.github.io/AD_ORM_/RA_CE/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+    <url>
+         <loc>https://asalvadorc.github.io/AD_ORM_/Springboot/</loc>
+         <lastmod>2025-08-12</lastmod>
+    </url>
+</urlset>

@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://asalvadorc.github.io/AD_ORM_/Hibernate/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Hibernate - AD - Accés a Dades</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Hibernate";
+        var mkdocs_page_input_path = "Hibernate.md";
+        var mkdocs_page_url = "/AD_ORM_/Hibernate/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../assets/logocaminas.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">UD 3. Mapeo Objeto-Relacional</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../RA_CE/">RA y CE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Introduccion/">Introducción</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Hibernate</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#mecanismos-de-persistencia-de-hibernate">Mecanismos de persistencia de Hibernate</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ciclo-de-vida-de-una-entidad">Ciclo de vida de una entidad</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#jpa-java-persistence-api">JPA (Java Persistence API)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#metodos-en-hibernate-para-sesiones-transacciones-y-manejo-de-objetos">Métodos en Hibernate para sesiones, transacciones y manejo de objetos</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#proyecto-con-sqlite">🛠 Proyecto con SQLite</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#proyecto-con-postgresql">🛠 Proyecto con PostgreSQL</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">AD - Accés a Dades</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">UD 3. Mapeo Objeto-Relacional</li>
+      <li class="breadcrumb-item active">Hibernate</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="hibernate">Hibernate<a class="headerlink" href="#hibernate" title="Permanent link">&para;</a></h1>
+<p>En el desarrollo de aplicaciones que usan bases de datos relacionales, las herramientas ORM (<strong>Object-Relational Mapping</strong>) permiten <strong>gestionar la persistencia de objetos</strong> sin tener que escribir SQL manualmente.</p>
+<p><strong>Hibernate</strong> es una <strong>implementación directa de JPA</strong>, que permite persistir objetos Java/Kotlin. Se utiliza mucho en proyectos donde se desea controlar cada detalle del proceso de persistencia.</p>
+<p>En este apartado veremos como configurar un proyecto en IntelliJ con <strong>Hibernate + Kotlin + Gradle</strong>, tanto para una BD embebida <strong>SQlite</strong> como para una BD en servidor <strong>Postgres</strong>.</p>
+<p>En ambos proyectos <strong>necesitamos</strong>:</p>
+<ul>
+<li>Kotlin (IntelliJ 2024)</li>
+<li>Base de datos SQLite /Postgres</li>
+<li>Librerías Hibernate y JDBC en build.gradle.kts</li>
+<li>Clases con anotaciones JPA</li>
+<li>Un archivo de configuración hibernate.cfg.xml</li>
+<li>Un dialecto personalizado para el caso de SQLite</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Dialecto</p>
+<p>Hibernate necesita un <strong>dialecto</strong> para saber cómo debe comunicarse con cada tipo de base de datos.
+Como <strong>SQLite</strong> no tiene uno propio incluido, debemos crearlo nosotros para decirle cómo funcionan sus comandos y tipos.
+Sin ese dialecto, Hibernate no sabrá cómo generar las sentencias SQL correctas y fallará al conectarse o ejecutar consultas.</p>
+</div>
+<h2 id="mecanismos-de-persistencia-de-hibernate">Mecanismos de persistencia  de Hibernate<a class="headerlink" href="#mecanismos-de-persistencia-de-hibernate" title="Permanent link">&para;</a></h2>
+<p>Hibernate nos ayuda a <strong>guardar y recuperar objetos Java en una base de datos</strong> sin que tengamos que escribir mucho SQL.<br />
+Para conseguirlo utiliza varios mecanismos:</p>
+<hr />
+<p><strong class="azul">1- Sesión o contexto de persistencia</strong></p>
+<ul>
+<li><strong>Qué es:</strong> Piensa en la sesión como una “mochila” donde Hibernate guarda temporalmente los objetos con los que estás trabajando.  </li>
+<li><strong>Qué hace:</strong> Si cambias un objeto (por ejemplo, el nombre de un cliente), Hibernate se da cuenta y, al final de la transacción, actualiza la base de datos automáticamente.  </li>
+<li><strong>Caché de primer nivel:</strong> Dentro de esa mochila está el “primer caché”: si ya pediste un cliente, no volverá a la base de datos mientras dure la sesión.</li>
+<li><strong>UPDATE único</strong>:  Si cambias varias propiedades, Hibernate las agrupa en un único UPDATE al final de la transacción.</li>
+</ul>
+<blockquote>
+<p><strong>Ejemplo:</strong><br />
+Pides el cliente con id 5, lo guardas en memoria, cambias su nombre, y cuando confirmas la transacción Hibernate actualiza ese cambio en la base.</p>
+</blockquote>
+<hr />
+<p><strong class="azul">2- Ciclo de vida de los objetos en Hibernate</strong></p>
+<p>Los objetos que usas en Hibernate pueden encontrarse en diferentes estados, dependiendo de si están relacionados o no con la base de datos y la sesión activa:</p>
+<ul>
+<li><strong>Transitorio (Transient):</strong> El objeto ha sido creado pero <em>no está guardado en la base ni asociado a la sesión</em>. No tiene identificador y Hibernate no lo rastrea.</li>
+<li><strong>Persistente o gestionado (Persistent o Managed):</strong> El objeto está asociado a la sesión y cualquier cambio que le hagas será sincronizado automáticamente con la base de datos al confirmar la transacción. Ejemplo: cargaste o guardaste un objeto usando la sesión.</li>
+<li><strong>Separado (Detached):</strong> El objeto representó un registro guardado, pero su sesión se cerró. Sigue existiendo en memoria, pero Hibernate ya no rastrea cambios en él a menos que se reuna con una sesión.</li>
+<li><strong>Eliminado (Removed):</strong> El objeto está marcado para borrar de la base de datos cuando se confirme la transacción.</li>
+</ul>
+<p><strong class="azul">3- Transacciones</strong></p>
+<ul>
+<li><strong>Qué es:</strong> Una transacción es un paquete de operaciones que <strong>o se hacen todas o no se hace ninguna</strong>.  </li>
+<li><strong>Qué hace Hibernate:</strong> Coordina estas transacciones con la base de datos para que los datos queden siempre correctos.</li>
+</ul>
+<blockquote>
+<p><strong>Ejemplo:</strong><br />
+Si le restas stock a un producto y sumas esa venta, ambas acciones deben hacerse juntas.<br />
+Si una falla, se deshacen todas.</p>
+</blockquote>
+<hr />
+<p><strong class="azul">4- Mapeo Objeto-Relacional (ORM)</strong></p>
+<ul>
+<li><strong>Qué es:</strong> El proceso de decirle a Hibernate cómo un objeto Java se relaciona con una tabla y sus columnas en la base de datos.  </li>
+<li>Lo hacemos con <strong>anotaciones</strong> (<code>@Entity</code>, <code>@OneToMany</code>, etc.) o con XML.  </li>
+<li>Permite también indicar relaciones entre objetos (uno a muchos, muchos a muchos, etc.).</li>
+</ul>
+<hr />
+<p><strong class="azul">5- Lenguajes de consulta</strong></p>
+<ul>
+<li><strong>HQL:</strong> Parecido a SQL, pero pensado para trabajar con <strong>objetos y atributos</strong> en vez de con tablas y columnas.</li>
+<li><strong>Criteria API:</strong> Consultas en Java usando métodos y objetos → ideal para construir consultas dinámicas.</li>
+<li><strong>SQL nativo:</strong> Si hace falta, puedes usar consultas SQL normales.</li>
+</ul>
+<hr />
+<p><strong class="azul">6- Gestión de concurrencia</strong> </p>
+<ul>
+<li><strong>Qué es:</strong> Hibernate evita que dos usuarios modifiquen el mismo dato al mismo tiempo sin darse cuenta.</li>
+<li>Usa principalmente <strong>control optimista</strong>, con un campo de “versión” para detectar cambios simultáneos.</li>
+</ul>
+<hr />
+<p><strong class="azul">7- Caché de segundo nivel</strong> </p>
+<ul>
+<li><strong>Qué es:</strong> Un almacenamiento opcional <strong>compartido entre sesiones</strong> para no repetir lecturas a la base de datos.</li>
+<li><strong>Para qué sirve:</strong> Acelerar aplicaciones que leen mucho y escriben poco.</li>
+</ul>
+<hr />
+<p><strong class="azul">8- Lazy Loading (Carga perezosa)</strong> </p>
+<ul>
+<li><strong>Qué es:</strong> No traer datos de relaciones hasta que realmente los necesites.</li>
+<li><strong>Para qué sirve:</strong> Evita pedir datos innecesarios y mejora el rendimiento.</li>
+</ul>
+<blockquote>
+<p><strong>Ejemplo:</strong><br />
+Cargas un cliente y solo su información básica; sus pedidos no se cargan hasta que llamas a <code>cliente.getPedidos()</code>.</p>
+</blockquote>
+<hr />
+<p><strong class="azul">9- Interceptores y eventos</strong></p>
+<ul>
+<li><strong>Qué es:</strong> Puntos donde puedes “enganchar” tu código y ejecutar algo antes o después de que Hibernate guarde, actualice o borre.</li>
+</ul>
+<blockquote>
+<p><strong>Ejemplo:</strong> Registrar en un log cada vez que se crea un nuevo pedido.</p>
+</blockquote>
+<hr />
+<p><strong class="azul">10- Validación</strong> </p>
+<ul>
+<li>Hibernate se integra con <strong>Bean Validation</strong> (<code>@NotNull</code>, <code>@Size</code>, etc.) para comprobar que los datos cumplen las reglas <strong>antes de guardarlos</strong>.</li>
+</ul>
+<blockquote>
+<p><strong>Ejemplo:</strong><br />
+Si una propiedad <code>@NotNull</code> está vacía, Hibernate no lo guardará y avisará del error.</p>
+</blockquote>
+<hr />
+<h2 id="ciclo-de-vida-de-una-entidad">Ciclo de vida de una entidad<a class="headerlink" href="#ciclo-de-vida-de-una-entidad" title="Permanent link">&para;</a></h2>
+<p>El ciclo de vida de un objeto persistente describe las etapas por las que pasa un objeto que está vinculado a una base de datos cuando usamos una herramienta ORM (como JPA o Hibernate).</p>
+<table>
+<thead>
+<tr>
+<th>Estado</th>
+<th>¿Qué significa?</th>
+<th>Cómo se entra</th>
+<th>Cómo se sale</th>
+<th>¿Se sincroniza con BD?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Transient</strong></td>
+<td>Objeto nuevo, no asociado a la BD</td>
+<td>Creando la instancia (<code>val e = Entidad()</code>)</td>
+<td><code>persist(e)</code> → pasa a <strong>Persistent</strong></td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td><strong>Persistent (Managed)</strong></td>
+<td>Hibernate lo gestiona en la <code>Session</code></td>
+<td><code>persist(e)</code> o <code>get/find(Clase, id)</code></td>
+<td><code>remove(e)</code> → <strong>Removed</strong>; <code>commit/close/clear/evict</code> → <strong>Detached</strong></td>
+<td>✅ Sí (en <code>flush</code>/<code>commit</code>)</td>
+</tr>
+<tr>
+<td><strong>Detached</strong></td>
+<td>Fuera de la <code>Session</code> (ya no gestionado)</td>
+<td>Cerrar/limpiar sesión (<code>close/clear/evict</code>) o tras <code>commit</code></td>
+<td><code>merge(e)</code> → vuelve a <strong>Persistent</strong></td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td><strong>Removed</strong></td>
+<td>Marcado para borrado</td>
+<td><code>remove(e)</code> desde <strong>Persistent</strong></td>
+<td><code>commit</code> ejecuta el <code>DELETE</code></td>
+<td>✅ Sí (se borra en <code>commit</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Hibernate/JPA necesita saber en qué estado está cada objeto para:</p>
+<ul>
+<li>Sincronizar automáticamente los cambios con la BD </li>
+<li>Mantener identidad en memoria (mismo id → misma instancia dentro de la sesión).</li>
+<li>Decidir cuándo ejecutar INSERT/UPDATE/DELETE (en flush(JPA)/commit(Hibernate)).</li>
+<li>Controlar rendimiento (caché de 1er nivel, lazy loading).</li>
+<li>Tratar correctamente objetos fuera de sesión (detached) y reanexarlos (merge).</li>
+</ul>
+<p>Sin ese modelo acabaríamos escribiendo y manteniendo SQL a mano y perdiendo la coherencia entre memoria y base de datos.</p>
+<p>Técnicamente se gestiona a través de la <strong>Session (Hibernate)</strong> o <strong>EntityManager (JPA)</strong> y la transacción. Es como una unidad de trabajo: abres sesión, haces cosas con objetos, confirmas (commit) y cierras.</p>
+<pre><code>                            ┌──────────────────────────┐
+                            │        TRANSIENT         │
+                            │ (objeto nuevo, sin BD)   │
+                            └───────────┬──────────────┘
+                                        │ persist()
+                                        ▼
+                           ┌──────────────────────────┐
+                           │   PERSISTENT / MANAGED   │
+                           │ (vivo en la Session)     │
+                           │                          │
+                           │  • dirty checking        │
+                           │    (cambias campos →     │  get()/find()
+                           │      UPDATE en commit)   │  commit()/flush() (INSERT/UPDATE/DELETE)
+                           │  • caché 1er nivel       │  (no cambia el estado)
+                           │  • lazy loading          │
+                           └────────┬───────────┬─────┘
+                       remove()     │           │ close()/clear()/commit + close()
+                          │         │           │        (sale de sesión)
+                          ▼         │           ▼
+            ┌────────────────┐      │  ┌──────────────────────────┐
+            │     REMOVED    │      │  │         DETACHED         │
+            │ (marcado p/    │      │  │ (fuera de Session,       │
+            │  borrar)       │      │  │  ya no se sincroniza)    │
+            └──────┬─────────┘      │  └───────────┬──────────────┘
+                   │ commit()       │              │ merge()
+                   │ (DELETE)       │              ▼
+                   └────────────────┴──────►  (vuelve a) PERSISTENT
+</code></pre>
+<ul>
+<li><strong>persist(e)</strong>: TRANSIENT → PERSISTENT (se insertará en commit).</li>
+<li><strong>get/find(id)</strong>: carga y deja PERSISTENT.</li>
+<li><strong>remove(e)</strong>: PERSISTENT → REMOVED (se borra en commit).</li>
+<li><strong>close/clear/commit+close</strong>: PERSISTENT → DETACHED (sale de sesión).</li>
+<li><strong>merge(e)</strong>: DETACHED → PERSISTENT (fusiona estado).</li>
+<li><strong>commit/flush</strong>: sincroniza cambios con la BD (INSERT/UPDATE/DELETE).</li>
+<li><strong>lazy loading</strong>: accede a relaciones dentro de la Session; si no, LazyInitializationException.</li>
+</ul>
+<p><strong class="azul">Buenas prácticas para gestionar bien el ciclo de vida</strong></p>
+<pre><code>- Transacción siempre: begin → ops → commit (o rollback).
+- Actualiza managed cambiando campos; no necesitas update().
+- Colecciones: inicialízalas vacías (no lateinit).
+- En @ManyToOne, usa fetch = LAZY y accede dentro de la sesión.
+- Si la entidad está detached, usa merge para guardar cambios.
+</code></pre>
+<h2 id="jpa-java-persistence-api">JPA (Java Persistence API)<a class="headerlink" href="#jpa-java-persistence-api" title="Permanent link">&para;</a></h2>
+<p>Como ya vimos en la introducción, <strong>JPA</strong> es una especificación estándar de Java para el mapeo objeto-relacional (ORM). Es decir, permite trabajar con bases de datos relacionales usando objetos en lugar de sentencias SQL directas.</p>
+<p>Para poder utilizar JPA <strong>necesitamos</strong>:</p>
+<ul>
+<li>Clases de entidad anotadas (@Entity, @Id, etc.)</li>
+<li>Un proveedor JPA, como Hibernate.</li>
+<li>Un archivo de configuración (persistence.xml o hibernate.cfg.xml).</li>
+<li>Una forma de gestionar sesiones o transacciones (como SessionFactory de Hibernate).</li>
+</ul>
+<p><strong class="azul">Principales anotaciones de JPA</strong></p>
+<table>
+<thead>
+<tr>
+<th>Anotación</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@Entity</td>
+<td>Declara que la clase es persistente (una tabla)</td>
+</tr>
+<tr>
+<td>@Table(name = "nombre_tabla")</td>
+<td>Opcional: define el nombre real de la tabla</td>
+</tr>
+<tr>
+<td>@Id</td>
+<td>Indica la clave primaria</td>
+</tr>
+<tr>
+<td>@GeneratedValue</td>
+<td>Autoincremento (en algunos SGBD)</td>
+</tr>
+<tr>
+<td>@Column(name = "nombre_columna")</td>
+<td>Especifica una columna si el nombre es diferente al atributo</td>
+</tr>
+<tr>
+<td>@ManyToOne, @OneToMany, @JoinColumn</td>
+<td>Relacionan clases entre sí</td>
+</tr>
+<tr>
+<td>@EmbeddedId, @IdClass</td>
+<td>Para claves primarias compuestas</td>
+</tr>
+</tbody>
+</table>
+<p><strong class="azul">Mapear tablas y relaciones en JPA</strong></p>
+<p><strong>Declarar la clase como entidad</strong></p>
+<ul>
+<li><strong>@Entity</strong> → Indica que la clase representa una tabla de la base de datos.</li>
+<li>El nombre de la clase no tiene por qué coincidir con el de la tabla, pero debe estar registrado en la configuración de Hibernate.</li>
+</ul>
+<p><strong>Mapear la clave primaria</strong></p>
+<ul>
+<li><strong>@Id</strong> → Marca el campo como <strong>clave primaria</strong>.</li>
+<li>Si la clave es generada automáticamente, añadir <strong>@GeneratedValue</strong>.</li>
+<li>Para <strong>claves primarias compuestas</strong>, utilizar <strong>@IdClass</strong> o <strong>@EmbeddedId</strong>.</li>
+</ul>
+<p><strong>Mapear las columnas</strong></p>
+<ul>
+<li><strong>@Column(name = "nombre_columna")</strong> → únicamente si el nombre en la BD no coincide con el de la variable.</li>
+<li>Si coinciden, se puede omitir.</li>
+<li>Hibernate asigna automáticamente el tipo de dato, pero conviene que coincida con el de la BD.</li>
+</ul>
+<p><strong>Definir relaciones entre tablas</strong></p>
+<ul>
+<li>
+<p><strong>Muchos a Uno</strong> → @ManyToOne + @JoinColumn(name = "columna_foranea")</p>
+<ul>
+<li><strong>@ManyToOne(optional = false)</strong> sobre el atributo (optional=false: relación obligatoria, este parámetro es opcional).</li>
+<li><strong>@JoinColumn(name = "columna_fk")</strong> para indicar la columna de la clave foránea.</li>
+<li>Definir <strong>siempre un único objeto</strong>, no una lista ni array.</li>
+<li>Si es bidireccional, la otra clase (<strong>@OneToMany</strong>) tendrá la colección correspondiente con <strong>mappedBy</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Uno a Muchos</strong> → @OneToMany(mappedBy = "propiedadEnLaOtraClase")**</p>
+<ul>
+<li><strong>mappedBy obligatorio</strong> si es bidireccional → indica el nombre de la propiedad en la otra clase que apunta hacia aquí.</li>
+<li>fetch <strong>por defecto es EAGER</strong> (carga inmediata), así que si quieres carga diferida debes poner fetch = FetchType.LAZY. </li>
+<li>Definir <strong>siempre una colección</strong>: List, Set o Collection (inmutable o mutable según lo que necesites).</li>
+<li>Si es <strong>unidireccional</strong> (no hay referencia en la otra clase), no usas <strong>mappedBy</strong> pero sí <strong>@JoinColumn</strong> en <strong>@OneToMany</strong>.   </li>
+</ul>
+</li>
+<li>
+<p><strong>Uno a Uno</strong> → @OneToOne + @JoinColumn</p>
+<ul>
+<li><strong>Propiedad única</strong> (no lista ni array).</li>
+<li><strong>@JoinColumn</strong> va en el lado que tiene la clave foránea.</li>
+<li>Si la relación es bidireccional, en el otro lado se usa <strong>mappedBy</strong> para indicar que no es el dueño de la relación.</li>
+<li>Se puede hacer que la clave primaria sea también la clave foránea usando <strong>@MapsId</strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Muchos a Muchos</strong> → @ManyToMany + @JoinTable</p>
+<ul>
+<li>Siempre hay una <strong>tabla intermedia</strong>.</li>
+<li>En un lado se usa @JoinTable para definir la tabla y las columnas de unión.</li>
+<li>En el otro lado (si es bidireccional) se usa <strong>mappedBy</strong> para indicar que no es el dueño de la relación.</li>
+<li><strong>La propiedad es una colección</strong> (List, Set o MutableList en Kotlin).</li>
+<li>Hibernate maneja automáticamente los INSERT/DELETE en la tabla intermedia.</li>
+</ul>
+</li>
+<li>
+<p><strong>Clave primaria compuesta y además (parte de) esa clave es foránea</strong></p>
+<p>Si la tabla tiene clave primaria compuesta y, además, alguna parte de esa PK es una FK, JPA te obliga a representarla con una clase de clave. Tienes dos formas válidas:</p>
+<ol>
+<li>
+<p>Utilizar una clase identificadora con <strong>@IdClass</strong> en la entidad.    </p>
+<ul>
+<li>La entidad declara <strong>cada campo de la PK</strong> con <strong>@Id</strong>.</li>
+<li>Creas una clase <strong>XxxId Serializable</strong> con los mismos nombres y tipos.</li>
+<li>Si un campo <strong>@Id</strong> también es FK, mapea además la relación <strong>@ManyToOne</strong> usando <strong>la misma columna</strong> y marca el campo columna duplicado como <strong>insertable=false, updatable=false</strong> para evitar doble escritura.</li>
+</ul>
+</li>
+<li>
+<p>Utilizar una clase extra marcada com <strong>@EmbeddedId</strong> + <strong>@MapsId</strong>.</p>
+<ul>
+<li>Agrupas la PK en un objeto <strong>@Embeddable</strong>.</li>
+<li>En la entidad usas <strong>@EmbeddedId val id: XxxPK</strong>.</li>
+<li>Para relaciones que forman parte de la PK, declaras <strong>@ManyToOne</strong> +<strong> @MapsId("nombreCampoEnPK")</strong>. Así no duplicas columnas y JPA rellena la PK a partir del objeto relacionado.   </li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<p><strong>Propiedad lateinit</strong></p>
+<ul>
+<li>En Kotlin, si la entidad tiene una propiedad que debe representar esa <strong>relación obligatoria</strong> pero la inicialización no puede ser inmediata, se puede usar <strong>lateinit var</strong> para declarar esa propiedad sin valor inicial pero no nula. Esto evita declarar la propiedad como <strong>nullable (?)</strong>, que permitiría estados inválidos, y asegura que antes de usarla se le asignará un valor, reflejando así la obligatoriedad.</li>
+</ul>
+<p><strong>Consistencia en nombres</strong></p>
+<ul>
+<li>Los <strong>nombres de columnas y tablas</strong> deben coincidir exactamente con los de la BD si no se especifica <strong>@Table</strong> o <strong>@Column</strong>.</li>
+<li>Para claves foráneas, el nombre en <strong>@JoinColumn</strong> debe coincidir con la columna en la BD.</li>
+</ul>
+<p><strong>Relaciones bidireccionales</strong></p>
+<p>Una relación bidireccional requiere que en una clase se utilice <strong>mappedBy</strong> para evitar bucles infinitos al serializar y problemas de duplicidad.</p>
+<h2 id="metodos-en-hibernate-para-sesiones-transacciones-y-manejo-de-objetos">Métodos en Hibernate para sesiones, transacciones y manejo de objetos<a class="headerlink" href="#metodos-en-hibernate-para-sesiones-transacciones-y-manejo-de-objetos" title="Permanent link">&para;</a></h2>
+<p>En Hibernate, para manejar sesiones, transacciones y el ciclo de vida de los objetos, se utilizan varios métodos clave dentro de la interfaz Session y la gestión de transacciones. A continuación te resumo los más importantes y comunes:</p>
+<p><strong class="azul">Gestión de Sesiones</strong>  </p>
+<ul>
+<li>
+<p><code>sessionFactory.openSession()</code><br />
+  Abre una nueva sesión (contexto de persistencia) independiente para interactuar con la base de datos.</p>
+</li>
+<li>
+<p><code>sessionFactory.getCurrentSession()</code><br />
+  Obtiene la sesión actual vinculada al hilo de ejecución, usada comúnmente con manejo automático de transacciones.</p>
+</li>
+<li>
+<p><code>session.close()</code><br />
+  Cierra la sesión y libera recursos.</p>
+</li>
+</ul>
+<hr />
+<p><strong class="azul">Manejo de Transacciones</strong> </p>
+<ul>
+<li>
+<p><code>session.beginTransaction()</code><br />
+  Inicia una nueva transacción dentro de la sesión.</p>
+</li>
+<li>
+<p><code>transaction.commit()</code><br />
+  Confirma los cambios realizados, sincronizando la sesión con la base de datos.</p>
+</li>
+<li>
+<p><code>transaction.rollback()</code><br />
+  Revierte los cambios en caso de error.</p>
+</li>
+</ul>
+<hr />
+<p><strong class="azul">Operaciones sobre objetos y ciclo de vida</strong> </p>
+<ul>
+<li>
+<p><code>session.save(entity)</code><br />
+  Guarda una entidad nueva en la base de datos (de <strong>transitorio</strong> a <strong>persistente</strong>).</p>
+</li>
+<li>
+<p><code>session.persist(entity)</code><br />
+  Similar a <code>save()</code>, pero no devuelve el identificador.</p>
+</li>
+<li>
+<p><code>session.get(Class, id)</code><br />
+  Recupera una entidad por su identificador en estado <strong>managed</strong> (gestionado).</p>
+</li>
+<li>
+<p><code>session.load(Class, id)</code><br />
+  Devuelve un <em>proxy</em> de la entidad para carga diferida; accede a DB solo al usarla.</p>
+</li>
+<li>
+<p><code>session.update(entity)</code><br />
+  Reasocia una entidad <strong>detached</strong> a la sesión y la marca para actualización.<br />
+<em>(No es necesario si ya está en estado </em><em>managed</em><em>).</em></p>
+</li>
+<li>
+<p><code>session.merge(entity)</code><br />
+  Copia el estado de una entidad <strong>detached</strong> sobre la correspondiente en estado <strong>managed</strong>.</p>
+</li>
+<li>
+<p><code>session.delete(entity)</code><br />
+  Marca una entidad para ser eliminada.</p>
+</li>
+<li>
+<p><code>session.flush()</code><br />
+  Fuerza la sincronización inmediata de los cambios pendientes con la base de datos.</p>
+</li>
+<li>
+<p><code>session.clear()</code><br />
+  Limpia la sesión, desvinculando todas las entidades y vaciando el caché de primer nivel.</p>
+</li>
+</ul>
+<hr />
+<p><strong class="azul">Resumen</strong> </p>
+<p>Con estos métodos puedes:</p>
+<ul>
+<li>Abrir y cerrar sesiones.  </li>
+<li>Controlar transacciones (inicio, confirmación, reversión).</li>
+<li>Gestionar el ciclo de vida de las entidades (<strong>transitorio</strong>, <strong>persistente</strong>, <strong>detached</strong>, <strong>eliminado</strong>).</li>
+<li>Ejecutar operaciones CRUD aprovechando la detección automática de cambios en entidades <strong>managed</strong>.</li>
+</ul>
+<div class="admonition tip">
+<p>En los siguientes ejemplos veremos como se aplica la gestión de una BD relacional utilizando todos los mecanismos de Hibernate.</p>
+</div>
+<h2 id="proyecto-con-sqlite">🛠 Proyecto con SQLite<a class="headerlink" href="#proyecto-con-sqlite" title="Permanent link">&para;</a></h2>
+<p>En el tema anterior, dedicado a las bases de datos relacionales, ya estudiamos la base de datos <strong>Tienda</strong>, formada por varias tablas relacionadas mediante claves primarias y claves foráneas.<br />
+Ahora vamos a dar un paso más: veremos cómo mapear esas tablas a clases de Kotlin utilizando Hibernate y las anotaciones JPA (Jakarta Persistence API).<br />
+El objetivo es que el código pueda trabajar directamente con objetos en lugar de sentencias SQL.</p>
+<p>En el ejemplo práctico utilizaremos la base de datos <strong>Tienda</strong>, pero lo aprendido será aplicable a cualquier base de datos relacional que queramos trabajar desde Kotlin usando Hibernate.</p>
+<p><strong class="azul">Tienda</strong><br />
+<img alt="ref" src="../img/bd_factura.jpg" />|<img alt="ref" src="../img/campos_bd_factura.jpg" /></p>
+<p>Los pasos a seguir serían estos:</p>
+<p><strong>Paso 1:</strong> Crear el proyecto base en IntelliJ. La estructura sugerida podría ser esta.</p>
+<p><strong>📁 Estructura del proyecto</strong></p>
+<pre><code>src/
+├── main/
+│   ├── kotlin/
+│   │   ├── Article.kt
+│   │   ├── Client.kt
+│   │   ├── Factura.kt
+│   │   ├── LiniaFac.kt
+│   │   ├── Main.kt
+│   │   └── dialect/
+│   │       └── SQLiteDialect.kt
+│   └── resources/
+│       ├── hibernate.cfg.xml
+│       └── Tienda.sqlite
+└── build.gradle.kts
+</code></pre>
+<p><strong>Paso 2:</strong> Configurar el archivo <strong>build.gradle.kts</strong></p>
+<pre><code>    plugins {
+        kotlin("jvm") version "2.1.21"
+    }
+
+    group = "org.example"
+    version = "1.0-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        //Driver SQLite
+        implementation("org.xerial:sqlite-jdbc:3.45.1.0") 
+        // Hibernate ORM
+        implementation("org.hibernate.orm:hibernate-core:6.4.4.Final") 
+        //JPA API
+        implementation("jakarta.persistence:jakarta.persistence-api:3.1.0") 
+    }
+</code></pre>
+<p><strong>Paso 3:</strong> Crear las entidades y sus relaciones.</p>
+<p>⚠️- Los campos PK deben ir anotados con @Id.  </p>
+<p><strong>Client.kt</strong></p>
+<pre><code>import jakarta.persistence.*
+
+@Entity                         // Anota la clase como entidad 
+@Table(name = "client")         // Nombre real de la tabla
+class Client {
+    @Id                         //Clave Primaria
+    @Column(name = "cod_cli")   //Si el nombre del atributo y el de la columna coinciden, puedes omitir @Column(name = ...).
+    var codCli: Int = 0
+    var nom: String = ""
+    var adreca: String = ""
+    var cp: Int = 0
+    var poblacio: String = ""
+
+    //(relación 1:N)
+    //mappedBy indica que la relación con la factura está gestionada por el campo client
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY)  
+    var factures: List&lt;Factura&gt; = emptyList()
+}
+</code></pre>
+<div class="admonition note">
+<p>⚠️ Si la clave es generada automáticamente (por ejemplo, AUTOINCREMENT en SQLite):</p>
+<pre><code>    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cod_cli")
+    var codCli: Int? = null
+</code></pre>
+</div>
+<p><strong>Article.kt</strong></p>
+<pre><code>import jakarta.persistence.*
+
+@Entity
+@Table(name = "article")
+data class Article(
+    @Id
+    @Column(name = "cod_a")
+    var id: String = "",
+
+    var descrip: String = "",
+    var preu: Double = 0.0,
+    var stock: Int = 0,
+    @Column(name = "stock_min")
+    var stockMin: Int = 0
+)
+</code></pre>
+<p><strong>Factura.kt</strong></p>
+<pre><code>import jakarta.persistence.*
+
+@Entity
+@Table(name = "factura")
+class Factura {
+    @Id
+    @Column(name = "num_f")
+    var numF: Int = 0
+
+    var data: String = ""
+    var iva: Int = 0
+
+    @ManyToOne
+    @JoinColumn(name = "cod_cli")   // clave foránea
+    lateinit var client: Client     //client es la propiedad que apunta al objeto Client
+
+
+
+    //la relación con las lineas de factura está gestionada por el campo factura
+    @OneToMany(mappedBy = "factura", fetch = FetchType.LAZY) 
+    var linies: List&lt;LiniaFac&gt; = mutableListOf()
+}
+</code></pre>
+<p><strong>LiniaFac.kt + ID compuesto</strong></p>
+<p>SQLite no permite una clave primaria autoincremental con múltiples columnas, así que usamos <strong>@IdClass</strong>.</p>
+<p>⚠️- El nombre de los campos en LiniaFacId debe coincidir con los de la entidad.  </p>
+<ul>
+<li>
+<p><strong>LiniaFacId.kt</strong> (para la clave compuesta)</p>
+<pre><code>import java.io.Serializable
+
+data class LiniaFacId(
+    var numF: Int = 0,
+    var numL: Int = 0
+) : Serializable
+</code></pre>
+</li>
+<li>
+<p><strong>LiniaFac.kt</strong></p>
+</li>
+</ul>
+<p>⚠️- En relaciones donde la FK forma parte de la PK (factura), se añade <strong>insertable = false, updatable = false</strong> para evitar conflictos. </p>
+<pre><code>    import jakarta.persistence.*
+
+    @Entity
+    @Table(name = "linia_fac")
+    @IdClass(LiniaFacId::class) //clave primaria autoincremental con múltiples columnas
+    class LiniaFac {
+        @Id
+        @Column(name = "num_f")
+        var numF: Int = 0
+
+        @Id
+        @Column(name = "num_l")
+        var numL: Int = 0
+
+        @ManyToOne
+        @JoinColumn(name = "num_f", insertable = false, updatable = false)
+        lateinit var factura: Factura
+
+        @ManyToOne
+        @JoinColumn(name = "cod_a")
+        lateinit var article: Article
+
+        var quant: Int = 0
+        var preu: Double = 0.0
+    }
+</code></pre>
+<p><strong>Paso 4:</strong> Crear el dialecto personalizado para SQLite en <strong>src/main/kotlin/dialect/SQLiteDialect.kt</strong></p>
+<p>⚠️ Hibernate no incluye un dialecto oficial para SQLite. Usamos uno personalizado.</p>
+<pre><code>    package dialect
+
+    import org.hibernate.dialect.DatabaseVersion
+    import org.hibernate.dialect.Dialect
+    import org.hibernate.dialect.identity.IdentityColumnSupport
+    import org.hibernate.dialect.identity.IdentityColumnSupportImpl
+    import java.sql.Types
+
+    class SQLiteDialect : Dialect() {
+
+        override fun getIdentityColumnSupport(): IdentityColumnSupport {
+            return IdentityColumnSupportImpl()
+        }
+
+        fun getIdentityColumnString(): String = "integer"
+        fun getIdentitySelectString(): String = "select last_insert_rowid()"
+        override fun getAddColumnString(): String = "add column"
+        override fun hasAlterTable(): Boolean = false
+        override fun dropConstraints(): Boolean = false
+        override fun supportsCascadeDelete(): Boolean = false
+        override fun supportsIfExistsBeforeTableName(): Boolean = true
+    }
+</code></pre>
+<p><strong>Paso 5:</strong> Crear el archivo en <strong>src/main/resources/hibernate.cfg.xml</strong> </p>
+<pre><code>    &lt;?xml version='1.0' encoding='utf-8'?&gt;
+    &lt;!DOCTYPE hibernate-configuration PUBLIC
+            "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+            "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd"&gt;
+    &lt;hibernate-configuration&gt;
+        &lt;session-factory&gt;
+            &lt;!-- Configuración de conexión --&gt;
+            &lt;property name="hibernate.connection.driver_class"&gt;org.sqlite.JDBC&lt;/property&gt;
+            &lt;property name="hibernate.connection.url"&gt;jdbc:sqlite:src/main/resources/Tienda.sqlite&lt;/property&gt;
+
+            &lt;!-- Dialecto personalizado --&gt;
+            &lt;property name="hibernate.dialect"&gt;dialect.SQLiteDialect&lt;/property&gt;
+
+            &lt;!-- Opciones adicionales --&gt;
+            &lt;property name="hibernate.hbm2ddl.auto"&gt;validate&lt;/property&gt;
+            &lt;property name="hibernate.show_sql"&gt;true&lt;/property&gt;
+
+            &lt;!-- Clases mapeadas --&gt;
+            &lt;mapping class="Client"/&gt;
+            &lt;mapping class="Article"/&gt;
+            &lt;mapping class="Factura"/&gt;
+            &lt;mapping class="LiniaFac"/&gt;
+        &lt;/session-factory&gt;
+    &lt;/hibernate-configuration&gt;
+</code></pre>
+<p><strong class="azul">Ejemplos CRUD</strong></p>
+<p>Una vez definidos los archivos de configuración y mapeadas las tablas de tienda (y sus relaciones) a clases con JPA/Hibernate, veremos ejemplos prácticos de cómo trabajar con las entidades: consultar clientes, navegar relaciones (cliente → facturas), y realizar operaciones de inserción, actualización y borrado de forma orientada a objetos sin utilizar ResultSet ni SQL embebido.</p>
+<p><strong>Ejemplo_clientes.kt</strong>: Mostrar todos los clientes.</p>
+<p>El programa crear una SessionFactory a partir de hibernate.cfg.xml, abre una sesión, hace una consulta y muestra los resultados.</p>
+<pre><code>import org.hibernate.cfg.Configuration
+
+fun main() {
+    val sessionFactory = Configuration()
+        .configure() // lee hibernate.cfg.xml
+        .buildSessionFactory()
+
+    sessionFactory.openSession().use { session -&gt;
+        session.beginTransaction()
+
+        // CONSULTA 1: Mostrar todos los clientes
+        val clientes = session.createQuery("FROM Client", Client::class.java).resultList
+
+        println("🧑‍💼 CLIENTES:")
+        println("Código\tNombre\t\tDirección\tCP\tPoblación")
+        println("------\t------\t\t---------\t--\t---------")
+        for (cliente in clientes) {
+            println("${cliente.codCli}\t${cliente.nom}\t\t${cliente.adreca}\t${cliente.cp}\t${cliente.poblacio}")
+        }
+
+        session.transaction.commit()
+    }
+
+    sessionFactory.close()
+}
+</code></pre>
+<p>El resultado mostrará el el log de ejecución detallado de Hibernate, que incluye información útil de depuración, seguido por el resultado de la consulta SQL:</p>
+<p><img alt="ref" src="../img/salida_sqlite.jpg" /></p>
+<p><strong>Ejemplo_facturas.kt</strong>: Mostrar todas las facturas</p>
+<p>Mostrar todas las facturas, junto con su número, fecha, nombre del cliente asociado, número de líneas que tiene.</p>
+<pre><code>   import org.hibernate.cfg.Configuration
+
+    fun main() {
+        val sessionFactory = Configuration()
+            .configure() // lee hibernate.cfg.xml
+            .buildSessionFactory()
+
+        sessionFactory.openSession().use { session -&gt;
+            session.beginTransaction()
+
+
+            println("\n🧾 FACTURAS CON NÚMERO DE LÍNEAS:")
+            println("Número\tFecha\t\tCliente\t\tNº líneas")
+            println("------\t--------\t-----------\t----------")
+
+            // CONSULTA 2: Mostrar facturas con nombre cliente y nº líneas
+            val facturas = session.createQuery("FROM Factura", Factura::class.java).resultList
+
+            for (factura in facturas) {
+                val numF = factura.numF
+                val data = factura.data
+                val nomCliente = factura.client.nom
+                val numLinies = factura.linies.size
+
+                println("$numF\t$data\t$nomCliente\t\t$numLinies")
+            }
+
+            session.transaction.commit()
+        }
+
+        sessionFactory.close()
+    }
+</code></pre>
+<p><strong>Ejemplo_facturas.kt</strong>: Facturas del cliente 306.</p>
+<pre><code>import org.hibernate.cfg.Configuration
+
+fun main() {
+    val sessionFactory = Configuration().configure().buildSessionFactory()
+    val session = sessionFactory.openSession()
+
+    session.use {
+        val codCliente = 306  // código del cliente que quieres consultar
+
+        // Buscar el cliente
+        val client = session.get(Client::class.java, codCliente)
+
+        if (client != null) {
+            println("Cliente: ${client.nom}")
+            println("Facturas:")
+
+            for (factura in client.factures) {
+                println("Factura Nº: ${factura.numF}, Fecha: ${factura.data}, IVA: ${factura.iva}")
+            }
+        } else {
+            println("No se encontró el cliente con código $codCliente")
+        }
+    }
+
+    sessionFactory.close()
+}
+</code></pre>
+<p><strong>Ejemplo_CRUD_article.kt</strong>: Operaciones CRUD sobre article.</p>
+<pre><code>import org.hibernate.cfg.Configuration
+
+fun main() {
+    val sf = Configuration().configure().buildSessionFactory()
+
+    sf.openSession().use { session -&gt;
+
+
+        // CREATE
+        session.beginTransaction()
+        val art = Article().apply {
+            id = "A100"
+            descrip = "Teclado mecánico"
+            preu = 49.99
+            stock = 15
+            stockMin = 5
+        }
+        session.persist(art) // inserta en la BD al hacer commit
+        session.transaction.commit()
+        println("CREATE: Insertado ${nuevo.id}")
+
+        // READ por id
+        session.beginTransaction()
+        val a = session.get(Article::class.java, "A100")
+        println("Artículo: ${a?.id} - ${a?.descrip} (${a?.preu}€)")
+        session.transaction.commit()
+
+        // READ filtrado (ejemplo: bajo stock)
+        session.beginTransaction()
+        val bajos = session.createQuery(
+            "from Article where stock &lt; stockMin",
+            Article::class.java
+        ).resultList
+        println("Artículos con stock bajo: ${bajos.size}")
+        session.transaction.commit()
+
+        // UPDATE (cambiar precio y stock)
+        session.beginTransaction()
+        val upd = session.get(Article::class.java, "A100")
+        if (upd != null) {
+            upd.preu = 54.99    // basta con modificar campos
+            upd.stock = (upd.stock ?: 0) + 10
+        }
+        //al commit, Hibernate hace el UPDATE
+        session.transaction.commit()
+
+        // DELETE
+        session.beginTransaction()
+        val toDel = session.get(Article::class.java, "A100")
+        if (toDel != null) session.remove(toDel)    // marcado para borrar
+        session.transaction.commit()
+
+
+    }
+    sf.close()
+}
+</code></pre>
+<h2 id="proyecto-con-postgresql">🛠 Proyecto con PostgreSQL<a class="headerlink" href="#proyecto-con-postgresql" title="Permanent link">&para;</a></h2>
+<p><strong>📁 Estructura del proyecto</strong></p>
+<pre><code>hibernate-gradle-kotlin/
+├── build.gradle.kts
+├── settings.gradle.kts
+└── src/
+└── main/
+├── kotlin/
+│ └── com/ejemplo/
+│ ├── Main.kt
+│ └── modelo/Producto.kt
+└── resources/
+└── hibernate.cfg.xml
+</code></pre>
+<hr />
+<p><strong>⚙️ Paso 1: Configurar <code>build.gradle.kts</code></strong></p>
+<pre><code>plugins {
+    kotlin("jvm") version "1.9.10"
+    application
+}
+
+group = "com.ejemplo"
+version = "1.0"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Kotlin
+    implementation(kotlin("stdlib"))
+
+    // Hibernate Core
+    implementation("org.hibernate.orm:hibernate-core:6.4.4.Final")
+
+    // Driver PostgreSQL (puedes cambiar por H2 si quieres algo embebido)
+    implementation("org.postgresql:postgresql:42.7.1")
+
+    // JPA API
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+}
+
+application {
+    mainClass.set("com.ejemplo.MainKt") // Importante: termina en Kt
+}
+</code></pre>
+<p><strong>⚙️ Paso 2: settings.gradle.kts</strong></p>
+<pre><code>rootProject.name = "hibernate-gradle-kotlin"
+</code></pre>
+<p><strong>Paso 3: Crear hibernate.cfg.xml en src/main/resources</strong></p>
+<pre><code>&lt;!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 5.3//EN"
+        "http://hibernate.org/dtd/hibernate-configuration-5.3.dtd"&gt;
+&lt;hibernate-configuration&gt;
+    &lt;session-factory&gt;
+        &lt;property name="hibernate.connection.driver_class"&gt;org.postgresql.Driver&lt;/property&gt;
+        &lt;property name="hibernate.connection.url"&gt;jdbc:postgresql://localhost:5432/tienda&lt;/property&gt;
+        &lt;property name="hibernate.connection.username"&gt;postgres&lt;/property&gt;
+        &lt;property name="hibernate.connection.password"&gt;admin&lt;/property&gt;
+
+        &lt;property name="hibernate.dialect"&gt;org.hibernate.dialect.PostgreSQLDialect&lt;/property&gt;
+        &lt;property name="hibernate.hbm2ddl.auto"&gt;update&lt;/property&gt;
+        &lt;property name="hibernate.show_sql"&gt;true&lt;/property&gt;
+
+        &lt;mapping class="com.ejemplo.modelo.Producto"/&gt;
+    &lt;/session-factory&gt;
+&lt;/hibernate-configuration&gt;
+</code></pre>
+<p><strong>Paso 4: Crear clase de entidad Producto.kt</strong></p>
+<pre><code>package com.ejemplo.modelo
+
+import jakarta.persistence.*
+
+@Entity
+@Table(name = "productos")
+data class Producto(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+
+    @Column(nullable = false)
+    val nombre: String,
+
+    val precio: Double
+)
+</code></pre>
+<p><strong>Paso 5: Clase principal Main.kt</strong></p>
+<pre><code>    package com.ejemplo
+
+    import com.ejemplo.modelo.Producto
+    import org.hibernate.cfg.Configuration
+
+    fun main() {
+        val sessionFactory = Configuration()
+            .configure() // lee hibernate.cfg.xml
+            .buildSessionFactory()
+
+        val producto = Producto(nombre = "Monitor", precio = 199.99)
+
+        sessionFactory.openSession().use { session -&gt;
+            session.beginTransaction()
+            session.persist(producto)
+            session.transaction.commit()
+        }
+
+        println("Producto guardado con éxito.")
+    }
+</code></pre>
+<p>🧪 Verificación</p>
+<ul>
+<li>Ejecuta el proyecto con el botón de play en Main.kt.</li>
+<li>Verifica en PostgreSQL que se ha creado la tabla y se ha insertado el registro.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Introduccion/" class="btn btn-neutral float-left" title="Introducción"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Introduccion/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
