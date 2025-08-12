@@ -47,7 +47,7 @@ Para conseguirlo utiliza varios mecanismos:
 
 Los objetos que usas en Hibernate pueden encontrarse en diferentes estados, dependiendo de si están relacionados o no con la base de datos y la sesión activa:
 
-- **Transitorio (Transient):** El objeto ha sido creado con `new` pero *no está guardado en la base ni asociado a la sesión*. No tiene identificador y Hibernate no lo rastrea. Ejemplo: `new Cliente()`.
+- **Transitorio (Transient):** El objeto ha sido creado pero *no está guardado en la base ni asociado a la sesión*. No tiene identificador y Hibernate no lo rastrea.
 - **Persistente o gestionado (Persistent o Managed):** El objeto está asociado a la sesión y cualquier cambio que le hagas será sincronizado automáticamente con la base de datos al confirmar la transacción. Ejemplo: cargaste o guardaste un objeto usando la sesión.
 - **Separado (Detached):** El objeto representó un registro guardado, pero su sesión se cerró. Sigue existiendo en memoria, pero Hibernate ya no rastrea cambios en él a menos que se reuna con una sesión.
 - **Eliminado (Removed):** El objeto está marcado para borrar de la base de datos cuando se confirme la transacción.
@@ -369,7 +369,8 @@ En Hibernate, para manejar sesiones, transacciones y el ciclo de vida de los obj
 **Resumen**{.azul} 
 
 Con estos métodos puedes:
-- Abrir y cerrar sesiones.
+
+- Abrir y cerrar sesiones.  
 - Controlar transacciones (inicio, confirmación, reversión).
 - Gestionar el ciclo de vida de las entidades (**transitorio**, **persistente**, **detached**, **eliminado**).
 - Ejecutar operaciones CRUD aprovechando la detección automática de cambios en entidades **managed**.
@@ -378,7 +379,7 @@ Con estos métodos puedes:
 
 
 !!!Tip ""
-    En los siguientes ejemplos veremos como se aplican estas anotaciones.
+    En los siguientes ejemplos veremos como se aplica la gestión de una BD relacional utilizando todos los mecanismos de Hibernate.
 
 ## 🛠 Proyecto con SQLite
 
@@ -619,7 +620,7 @@ SQLite no permite una clave primaria autoincremental con múltiples columnas, as
         </hibernate-configuration>
 
 
-**Ejemplos**{.azul}
+**Ejemplos CRUD**{.azul}
 
 Una vez definidos los archivos de configuración y mapeadas las tablas de tienda (y sus relaciones) a clases con JPA/Hibernate, veremos ejemplos prácticos de cómo trabajar con las entidades: consultar clientes, navegar relaciones (cliente → facturas), y realizar operaciones de inserción, actualización y borrado de forma orientada a objetos sin utilizar ResultSet ni SQL embebido.
 
