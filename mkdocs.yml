@@ -1,0 +1,28 @@
+site_url : https://asalvadorc.github.io/AD_ORM_
+
+site_name: AD - Accés a Dades
+
+extra_css:
+  - css/extra.css
+
+theme: 
+  name: readthedocs
+  highlightjs: true
+  logo: assets/logocaminas.png
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: True 
+  - tables    
+  - attr_list
+
+nav:
+
+- UD 3. Mapeo Objeto-Relacional:
+  - RA y CE: RA_CE.md
+  - Introducción: Introduccion.md
+  - Hibernate: Hibernate.md
+  
+  
+  

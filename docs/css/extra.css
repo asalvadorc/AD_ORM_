@@ -1,0 +1,45 @@
+body, p, li, ul, ol, blockquote, pre, code, table {
+    font-size: 14px !important;  /* Ajusta este valor según tus preferencias */
+    line-height: 1.6;  /* Mejora la legibilidad */
+}
+p {
+    text-align: justify;
+}
+
+.wy-nav-content { 
+    max-width: 100%; 
+    padding: 2rem; 
+  } 
+  
+.md-content {
+    max-width: 100%; /* Ajusta este valor según tus necesidades */
+    margin: 2rem;; /* Centra el contenedor en la página */
+}
+
+/*code, pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}*/
+
+.rojo {
+    color: red !important;
+}
+
+.azul {
+    color: #2980B9 !important;
+    font-size: 16px;
+    /*text-decoration: underline;*/
+
+}
+
+.verde {
+    color: green !important;
+    font-size: 16px;
+} 
+
+
+
+img {
+    border: 1px solid black; /* Marco negro de 2 píxeles */
+  }
+
